@@ -48,8 +48,7 @@ function Entry({
         if (settings?.UseReLoginFeature === false || settings?.UseReLoginFeature === undefined) {
             browser.tabs.create(properties);
         } else {
-            let activeTab; // Declare activeTab variable outside the promise chain
-
+            let activeTab; 
             browser.tabs
                 .query({ active: true, currentWindow: true })
                 .then((tabs) => {
@@ -57,19 +56,24 @@ function Entry({
                     activeTab = tabs[0];
 
                     // Send a message to the content script
+                    console.log("Sending message to content script");
                     return browser.tabs.sendMessage(activeTab.id, { message: "Is User Logged In?" });
                 })
                 .then((response) => {
                     const isUserLoggedIn = response.isLoggedIn;
+                    console.log("Is user logged in?", isUserLoggedIn);
                     if (isUserLoggedIn) {
                         // logout current user
                         const logoutUrl = `${modifiedUrl}/${LOGOUT_URL}`;
+                        console.log("Logging out user", logoutUrl);
                         return browser.tabs.sendMessage(activeTab.id, { message: "logoutUser", logoutUrl });
                     } else {
+                        console.log("User is not logged in");
                         return browser.tabs.create(properties);
                     }
                 })
                 .then((response) => {
+                    console.log("Response from logout", response);
                     if (response && response.response === "OK") {
                         return browser.storage.local.get(STORAGE_KEY);
                     }

@@ -1,16 +1,19 @@
 const LOGOUT_URL = "/secur/logout.jsp";
-chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+browser.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+    console.log("content.js: Message received: " + request.message);
     if (request.message === "Is User Logged In?") {
+        console.log("content.js: Checking if user is logged in...");
         sendResponse({ isLoggedIn: isUserLoggedIn() });
     }
     if (request.message === "logoutUser") {
+        console.log("content.js: Logging out user...");
         const logoutUrl = request.logoutUrl;
         sendResponse({ response: "OK" });
         window.location.href = logoutUrl;
     }
 });
 
-chrome.runtime.sendMessage({ message: "GETNEW", url: window.location.href }, (response) => {
+browser.runtime.sendMessage({ message: "GETNEW", url: window.location.href }, (response) => {
     if (response.loginURL && !isUserLoggedIn()) {
         setTimeout(() => {
             removeEntry();
@@ -20,8 +23,8 @@ chrome.runtime.sendMessage({ message: "GETNEW", url: window.location.href }, (re
 });
 
 const removeEntry = () => {
-    chrome.storage.local.get("sf-user-switcher", (result) => {
-        if (!chrome.runtime.lastError) {
+    browser.storage.local.get("sf-user-switcher", (result) => {
+        if (!browser.runtime.lastError) {
             const currentURL = window.location.href;
             const currentURLTmp = currentURL.substring(0, currentURL.indexOf(".")); // Modify the data
             const res = result["sf-user-switcher"];
@@ -34,14 +37,14 @@ const removeEntry = () => {
                     }
                 }
                 // Write the modified data back to storage
-                chrome.storage.local.set(result, () => {
-                    if (chrome.runtime.lastError) {
-                        console.error("Error setting data: " + chrome.runtime.lastError.message);
+                browser.storage.local.set(result, () => {
+                    if (browser.runtime.lastError) {
+                        console.error("Error setting data: " + browser.runtime.lastError.message);
                     }
                 });
             }
         } else {
-            console.error("Error getting data: " + chrome.runtime.lastError.message);
+            console.error("Error getting data: " + browser.runtime.lastError.message);
         }
     });
 };
