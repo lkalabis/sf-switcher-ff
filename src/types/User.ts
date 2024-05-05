@@ -10,15 +10,15 @@ export type User = {
   Shortcut?: string | null;
   IsActive: boolean;
   Profile: {
-      Name: string;
+    Name: string;
   };
   UUID: string;
   Position?: number;
   ColorCode?: string;
   Group?: {
-      Id: string | number;
-      Label: string;
-      Position: number;
-      ColorCode: string;
+    Id: string | number;
+    Label: string;
+    Position: number;
+    ColorCode: string;
   };
 };
