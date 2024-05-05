@@ -1,239 +1,412 @@
 *,
 *::before,
 *::after {
-  box-sizing: border-box;
+    box-sizing: border-box;
 }
 
 * {
-  margin: 0;
-  padding: 0;
+    margin: 0;
+    padding: 0;
 }
 
 html {
-  -webkit-text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
 }
 
 body {
-  display: flex;
-  width: 645px;
-  text-rendering: optimizeSpeed;
-  background-color: #2f6690;
+    display: flex;
+    width: 645px;
+    text-rendering: optimizeSpeed;
+    background-color: #2f6690;
 }
 
 .root {
-  width: 100%;
+    width: 100%;
 }
 
 .header {
-  background-color: #867f8d; /* Add background color as needed */
+    background-color: #867f8d; /* Add background color as needed */
+}
+
+.logo {
+    width: 24px;
+    height: 24px;
 }
 
 footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-left: 10px; /* Add padding for spacing */
-  margin-top: auto;
-  padding-right: 10px; /* Add padding for spacing */
-  background-color: #d9dcd6;
-  padding-bottom: 0px;
-  padding-top: 2px;
-  width: 645px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-left: 10px; /* Add padding for spacing */
+    margin-top: auto;
+    padding-right: 10px; /* Add padding for spacing */
+    background-color: #d9dcd6;
+    padding-bottom: 0px;
+    padding-top: 2px;
+    width: 645px;
 }
 
 .info {
-  display: flex;
-  color: black;
-  gap: 10px;
+    display: flex;
+    color: black;
+    gap: 10px;
 }
 
 .social-icons {
-  display: flex;
-  gap: 10px; /* Adjust spacing between icons */
+    display: flex;
+    gap: 10px; /* Adjust spacing between icons */
 }
 
 .social-icons a {
-  text-decoration: none;
-  color: #333; /* Adjust color as needed */
+    text-decoration: none;
+    color: #333; /* Adjust color as needed */
 }
 
 .social-icons img {
-  width: 24px; /* Adjust icon size as needed */
-  height: 24px;
-  border-radius: 50%; /* Optional: Add border-radius for rounded icons */
+    width: 24px; /* Adjust icon size as needed */
+    height: 24px;
+    border-radius: 50%; /* Optional: Add border-radius for rounded icons */
 }
 
 .container {
-  display: flex;
-  flex-direction: column;
-  min-height: 220px;
+    display: flex;
+    flex-direction: column;
+    min-height: 220px;
 }
 
 .addButtonContainer {
-  /* margin-top: 4px; */
-  width: 100%;
-  background-color: #3a7ca5; /* Add background color as needed */
+    /* margin-top: 4px; */
+    width: 100%;
+    background-color: #3a7ca5; /* Add background color as needed */
 }
 
 .editButtonContainer {
-  display: flex;
-  background-color: #3a7ca5; /* Add background color as needed */
+    display: flex;
+    background-color: #3a7ca5; /* Add background color as needed */
 }
 
 .gridContainer {
-  flex-direction: column;
-  margin-top: 4px;
-  display: flex;
+    flex-direction: column;
+    margin-top: 4px;
+    display: flex;
 }
 
 .grid {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 3px 0 3px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 3px 0 3px 16px;
 }
+.labelUsernameContainer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
 .editGrid {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 3px 0 3px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 3px 0 3px 16px;
 }
 .filteredEntries {
-  display: flex;
+    display: flex;
 }
 .entry.even {
-  background-color: #f4f4f4; /* Even entries background color */
-  padding: 3px;
+    background-color: #f4f4f4; /* Even entries background color */
+    padding: 3px;
 }
 
 .entry.odd {
-  background-color: #e0e0e0; /* Odd entries background color */
-  padding: 3px;
+    background-color: #e0e0e0; /* Odd entries background color */
+    padding: 3px;
 }
 
 .line {
-  margin-bottom: 5px; /* Adjust spacing between lines as needed */
+    margin-bottom: 5px; /* Adjust spacing between lines as needed */
 }
 
 .name {
-  font-weight: bold;
-  font-size: 12px;
-  color: #333;
+    font-weight: bold;
+    font-size: 12px;
+    color: #333;
 }
 
 .username {
-  font-style: italic;
-  color: #666;
+    font-style: italic;
+    color: #666;
 }
 
 .email {
-  color: #999;
+    color: #999;
 }
 .filteredEntriesList {
-  position: absolute;
-  top: 33px;
-  left: 246px;
-  width: 350px;
-  border-radius: 6px;
-  background-color: #fff;
-  max-height: 200px;
-  overflow: scroll;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  border: 1px solid #ccc;
-  background-color: #fff;
-  color: black;
-  border-radius: 4px;
-  z-index: 1;
+    position: absolute;
+    top: 33px;
+    left: 246px;
+    width: 350px;
+    border-radius: 6px;
+    background-color: #fff;
+    max-height: 200px;
+    overflow: scroll;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid #ccc;
+    background-color: #fff;
+    color: black;
+    border-radius: 4px;
+    z-index: 1;
 }
 
 .filteredEntriesList li {
-  padding: 8px;
-  cursor: pointer;
-  transition: background-color 0.3s;
+    padding: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
 }
 
 .filteredEntriesList li:hover {
-  background-color: #f2f2f2;
+    background-color: #f2f2f2;
 }
 
 .editLabel {
-  width: 220px;
+    width: 220px;
 }
 
 .editUsername {
-  width: 280px;
+    width: 280px;
 }
 
 .editLabel,
 .editUsername {
-  padding: 4px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
-  color: black;
-  background-color: white;
+    padding: 4px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    color: black;
+    background-color: white;
 }
 .labelEntry {
-  width: 220px;
+    width: 220px;
+    height: 24px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 .usernameEntry {
-  width: 280px;
+    display: flex;
+    justify-content: space-between;
+    width: 280px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.info-container {
+    position: absolute;
+    display: inline-block;
+    top: 10px;
+    left: 30px;
+    background-color: white;
+    padding: 1%;
+    border-radius: 4px;
+    border-style: solid;
+    cursor: pointer;
 }
 
 .shortcutEntry {
-  width: 50px;
+    width: 50px;
 }
 .labelEntry,
 .usernameEntry,
 .shortcutEntry {
-  font-size: small;
-  color: black;
-  padding: 4px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
-  background-color: white;
+    padding: 2px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    background-color: white;
+}
+
+.settingsIcon img {
+    width: 15px;
+    height: 15px;
+}
+
+.settingsIcon button {
+    border: none;
+    background-color: #d9dcd6;
+}
+
+.settingsIcon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield; /* Firefox */
+}
+.settings-text {
+    margin-left: 12px;
+    font-size: large;
+}
+
+.mainSettingsSection {
+    display: flex;
+    flex-direction: column;
+}
+
+.saveButtonContainer {
+    position: fixed;
+    bottom: 25px;
+    left: 300px;
+    display: flex;
+    justify-content: center;
+}
+
+.saveButtonContainer button {
+    padding: 2px 6px;
+    font-size: 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.saveButtonContainer button:disabled {
+    background: #ccc; /* Gray background when disabled */
+    cursor: not-allowed;
+}
+
+.informationIconLink {
+    text-decoration: none;
+    color: inherit;
+}
+.informationIcon {
+    padding-left: 3px;
+    cursor: pointer;
+}
+
+.showHelpContainer {
+    position: fixed;
+    top: 50px;
+    left: 250px;
+    border-radius: 5px;
+    border-style: solid;
+}
+
+.lookAndFeelInputs {
+    padding: 20px;
+    background: #dfdfdf; /* Light gray background */
+    height: 166px;
+}
+
+.lookAndFeelInputs label {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.lookAndFeelInputs input[type="checkbox"] {
+    margin-right: 10px;
+}
+
+.reLoginTimeInput {
+    margin-left: 15px;
+    width: 65px;
+    text-align: right;
+}
+
+.lookAndFeelInputs .reLoginTimeInput {
+    margin-right: 10px;
+    width: 100px;
+    padding-right: 5px;
+}
+
+.version {
+    margin-left: 10px;
+}
+
+.navbarSettingsSection {
+    margin-left: 150px;
+}
+
+.showLookFeelSectionPartButton {
+    background-color: #ccc;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 5px;
+}
+
+.LookAndFeelHeader {
+    display: flex;
+    justify-content: center;
+    padding: 4px;
+    font-size: 16px;
+}
+
+.headerSettingsSection {
+    align-items: center;
+    width: 645px;
+    padding: 5px;
+    display: flex;
+    justify-content: space-between;
+    background-color: white;
+}
+
+.headerSettingsSectionContainer {
+    display: flex;
+}
+.invalidURLMessage {
+    color: rgb(7, 7, 7);
+    font-size: 12px;
+    padding: 40px;
+    text-align: center;
 }
 
 .profileName {
-  font-weight: 600;
+    font-weight: 600;
 }
 
 .editEntryButtons {
-  margin-left: 0px;
+    margin-left: 0px;
 }
 .buttons {
-  margin-left: 0px;
+    margin-left: 0px;
 }
 
 .grid-btn {
-  background-color: #2f6690;
-  color: white; /* White text */
-  padding: 8px 10px; /* Some padding */
-  font-size: 16px; /* Set a font size */
-  cursor: pointer; /* Mouse pointer on hover */
-  border: none;
+    background-color: #2f6690;
+    color: white; /* White text */
+    padding: 8px 10px; /* Some padding */
+    font-size: 16px; /* Set a font size */
+    cursor: pointer; /* Mouse pointer on hover */
+    border: none;
 }
 
 .grid-btn:hover {
-  background-color: #3a7ca5; /* Add background color as needed */
+    background-color: #3a7ca5; /* Add background color as needed */
 }
 .btn {
-  background-color: #3a7ca5;
-  color: white; /* White text */
-  padding: 8px 10px; /* Some padding */
-  font-size: 16px; /* Set a font size */
-  cursor: pointer; /* Mouse pointer on hover */
-  border: none;
+    background-color: #3a7ca5;
+    color: white; /* White text */
+    padding: 8px 10px; /* Some padding */
+    font-size: 16px; /* Set a font size */
+    cursor: pointer; /* Mouse pointer on hover */
+    border: none;
 }
 
 .addEntryButton {
-  /* width: 100%; */
-  width: 645px;
-  height: 35px;
+    /* width: 100%; */
+    width: 645px;
+    height: 35px;
 }
 
 /* Darker background on mouse-over */
 .btn:hover {
-  background-color: #16425b; /* Add background color as needed */
+    background-color: #16425b; /* Add background color as needed */
 }

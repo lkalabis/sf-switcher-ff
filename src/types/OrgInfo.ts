@@ -1,5 +1,5 @@
 export type OrgInfo = {
-  hostname: string;
-  key: string;
-  orgId: string;
+    hostname: string;
+    key: string;
+    orgId: string;
 };
