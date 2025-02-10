@@ -2,7 +2,7 @@
     "manifest_version": 2,
     "name": "SF User Switcher",
     "description": "Switch easy and fast your Salesforce User",
-    "version": "0.70",
+    "version": "0.79",
     "browser_action": {
         "default_icon": {
             "16": "images/icon-16.png",
@@ -27,6 +27,7 @@
         {
             "matches": [
                 "https://*.salesforce.com/*",
+                "https://*.salesforce-setup.com/*",
                 "https://*.force.com/*",
                 "https://*.visualforce.com/*",
                 "https://*.lightning.force.com/*",
@@ -38,6 +39,7 @@
     ],
     "permissions": [
         "https://*.salesforce.com/*",
+        "https://*.salesforce-setup.com/*",
         "https://*.force.com/*",
         "https://*.visualforce.com/*",
         "https://*.lightning.force.com/*",

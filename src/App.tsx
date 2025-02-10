@@ -18,16 +18,7 @@ import { LOADING_MESSAGE, STORAGE_KEY } from "./utils/constants";
 import { ToastContainer, ToastOptions, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Settings from "./components/Settings";
-import {
-    DndContext,
-    DragOverlay,
-    closestCenter,
-    KeyboardSensor,
-    PointerSensor,
-    useSensor,
-    useSensors,
-} from "@dnd-kit/core";
-import { arrayMove, SortableContext, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
+import { useTranslation } from "react-i18next"; 
 
 export default function App() {
     const [showAddEntryForm, setShowAddEntryForm] = useState(false);
@@ -47,16 +38,62 @@ export default function App() {
         ShowTooltip: true,
         UseReLoginFeature: true,
         MillisecondsToWaitTillRelogin: 1000,
+        SelectedTheme: "Light",
+        SelectedLanguage: "en",
+        ShowUserLink: false,
     });
+    const { t, i18n } = useTranslation(); // Hook for translations
+    const [draggedItem, setDraggedItem] = useState<string | null>(null);
+    const [dropTarget, setDropTarget] = useState<string | null>(null);
 
-    const [activeId, setActiveId] = useState(null);
 
-    const sensors = useSensors(
-        useSensor(PointerSensor),
-        useSensor(KeyboardSensor, {
-            coordinateGetter: sortableKeyboardCoordinates,
-        }),
-    );
+    const onDragStart = (event: React.DragEvent<HTMLDivElement>, entryId: string) => {
+        setDraggedItem(entryId);
+    };
+
+    const onDragEnd = () => {
+        setDraggedItem(null);
+        setDropTarget(null);
+    };
+
+    const onDrop = async(event: React.DragEvent<HTMLDivElement>, targetId: string) => {
+        event.preventDefault();
+        if (!draggedItem || draggedItem === targetId) return;
+
+        // Find indexes of dragged and target entries
+        const draggedIndex = entries.findIndex((entry) => entry.Id === draggedItem);
+        const targetIndex = entries.findIndex((entry) => entry.Id === targetId);
+
+        if (draggedIndex === -1 || targetIndex === -1) return;
+
+        // Swap the items in the array
+        const newEntries = [...entries];
+        const [movedItem] = newEntries.splice(draggedIndex, 1);
+        newEntries.splice(targetIndex, 0, movedItem);
+
+        setEntries(newEntries);
+        setDraggedItem(null);
+        setDropTarget(null);
+
+        // Write the new order to storage
+        if (currentOrg) {
+            try {
+                await writeAllEntriesToStorage(newEntries, currentOrg);
+            } catch (error) {
+                console.error("Error saving new entry order:", error);
+            }
+        }
+
+    };
+
+    const onDragOver = (event: React.DragEvent<HTMLDivElement>, targetId: string) => {
+        event.preventDefault();
+
+        // Ensure we only set dropTarget if it's different
+        if (dropTarget !== targetId) {
+            setDropTarget(targetId);
+        }
+    };
 
     async function fetchData() {
         try {
@@ -68,6 +105,16 @@ export default function App() {
             const result = await browser.storage.local.get(STORAGE_KEY);
             const storedEntries = result[STORAGE_KEY] || {};
             setSettings(result[STORAGE_KEY].settings || {});
+
+            const savedSettings = result["sf-user-switcher"]?.settings;
+            if (savedSettings.SelectedTheme) {
+                applyTheme(savedSettings.SelectedTheme || "Light");
+            } else {
+                applyTheme("Light");
+            }
+            if (savedSettings.SelectedLanguage) {
+                i18n.changeLanguage(savedSettings.SelectedLanguage);
+            }
 
             const transformedEntries = transformEntries(currentOrgInfo, storedEntries);
             if (transformedEntries.length === 0) {
@@ -85,32 +132,10 @@ export default function App() {
         }
     }
 
-    // @ts-ignore
-    const handleDragStart = (event) => {
-        setActiveId(event.active.id);
-    };
-
-    // @ts-ignore
-    const handleDragEnd = async (event) => {
-        setActiveId(null);
-        const { active, over } = event;
-
-        if (active.id !== over.id) {
-            const oldIndex = entries.findIndex((entry) => {
-                return entry.Id === active.id;
-            });
-            const newIndex = entries.findIndex((entry) => {
-                return entry.Id === over.id;
-            });
-
-            const a = arrayMove(entries, oldIndex, newIndex);
-            setEntries(a);
-
-            if (currentOrg) {
-                await writeAllEntriesToStorage(a, currentOrg);
-                await fetchData();
-            }
-        }
+    const applyTheme = (themeName: string) => {
+        document.body.classList.remove(...document.body.classList);
+        const themeClass = `theme-${themeName.toLowerCase().replace(" ", "-")}`;
+        document.body.classList.add(themeClass);
     };
 
     const transformEntries = (currentOrgInfo: OrgInfo | null, storedEntries: Record<string, any>): User[] => {
@@ -168,7 +193,7 @@ export default function App() {
 
     const saveNewEntry = async (newEntry: User) => {
         if (!newEntry.Id) {
-            return toast.error("This is not a valid User", {
+            return toast.error(t("errorInvalidUser"), {
                 position: "top-right",
                 autoClose: 3000,
                 hideProgressBar: false,
@@ -190,33 +215,36 @@ export default function App() {
         if (currentOrg) {
             await writeNewEntryToStorage(newEntry, currentOrg);
             await fetchData();
-            toast.success("Entry Saved", toastConfig as ToastOptions<unknown>);
+            toast.success(t("entrySavedMessage"), toastConfig as ToastOptions<unknown>);
         }
     };
 
     const updateExistingEntry = async (updateEntry: User) => {
         try {
             if (editRecord) {
-                await deleteEntry(editRecord, false);
-            }
-            if (updateEntry.Label) {
-                updateEntry.Label = updateEntry.Label.trim();
-            }
-            updateEntry.Username = updateEntry.Username.trim();
-            setShowEditEntryForm(false);
-            setShowEditButtonContainer(false);
-            setShowAddButtonContainer(true);
-            setShowAddEntryForm(false);
-            if (currentOrg) {
-                await writeNewEntryToStorage(updateEntry, currentOrg);
-                toast.success("Entry Changed", toastConfig as ToastOptions<unknown>);
-                await loadRecords();
+                const indexOfEntry = await deleteEntry(editRecord, false);
+                if (indexOfEntry === -1) {
+                    return;
+                }
+
+                if (updateEntry.Label) {
+                    updateEntry.Label = updateEntry.Label.trim();
+                }
+                updateEntry.Username = updateEntry.Username.trim();
+                setShowEditEntryForm(false);
+                setShowEditButtonContainer(false);
+                setShowAddButtonContainer(true);
+                setShowAddEntryForm(false);
+                if (currentOrg) {
+                    await writeNewEntryToStorage(updateEntry, currentOrg, indexOfEntry);
+                    toast.success("Entry Changed", toastConfig as ToastOptions<unknown>);
+                    await loadRecords();
+                }
             }
         } catch (error) {
             console.error("Error deleting entry:", error);
         }
     };
-
     const loadRecords = async () => {
         // Update state to remove the entry
         const result = await browser.storage.local.get(STORAGE_KEY);
@@ -241,8 +269,8 @@ export default function App() {
         }
     };
 
-    const deleteEntry = (entryToDelete: User, withConfirmation: boolean): Promise<void> => {
-        return new Promise<void>((resolve, reject) => {
+    const deleteEntry = (entryToDelete: User, withConfirmation: boolean): Promise<number> => {
+        return new Promise(async (resolve, reject) => {
             if (withConfirmation) {
                 const isConfirmed = window.confirm("Are you sure you want to delete this entry?");
                 if (!isConfirmed) {
@@ -251,37 +279,33 @@ export default function App() {
                 }
             }
 
-            // Retrieve the existing data from storage
-            browser.storage.local
-                .get(STORAGE_KEY)
-                .then((result) => {
-                    if (browser.runtime.lastError) {
-                        console.error("Error:", browser.runtime.lastError);
-                        reject(new Error(browser.runtime.lastError.message));
-                        return;
-                    }
+            try {
+                const result = await browser.storage.local.get(STORAGE_KEY);
+                const storageData = result[STORAGE_KEY] || {};
 
-                    const storageData = result[STORAGE_KEY] || {};
+                if (!currentOrg?.orgId || !storageData[currentOrg.orgId]?.users) {
+                    throw new Error("Organization or user list not found");
+                }
 
-                    // Delete the entry with the matching ID
-                    const validUsers = storageData[currentOrg?.orgId].users.filter(
-                        (user: User) => user.UUID !== entryToDelete.UUID,
-                    );
-                    storageData[currentOrg?.orgId].users = validUsers;
+                const allUserEntries = storageData[currentOrg.orgId].users;
+                const indexOfEntry = allUserEntries.findIndex((user) => user.UUID === entryToDelete.UUID);
 
-                    return browser.storage.local.set({ [STORAGE_KEY]: storageData });
-                })
-                .then(() => {
-                    if (browser.runtime.lastError) {
-                        console.error("Error:", browser.runtime.lastError);
-                        reject(new Error(browser.runtime.lastError.message));
-                    } else {
-                        resolve();
-                    }
-                })
-                .catch((error) => {
-                    reject(error); // Forward any errors from browser.storage.local.get or browser.storage.local.set
-                });
+                if (indexOfEntry > -1) {
+                    const updatedUserEntries = [
+                        ...allUserEntries.slice(0, indexOfEntry),
+                        ...allUserEntries.slice(indexOfEntry + 1),
+                    ];
+                    storageData[currentOrg.orgId].users = updatedUserEntries;
+
+                    await browser.storage.local.set({ [STORAGE_KEY]: storageData }); // Ensure this completes before resolving
+                    resolve(indexOfEntry);
+                } else {
+                    resolve(-1);
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                reject(error);
+            }
         });
     };
 
@@ -342,17 +366,11 @@ export default function App() {
     };
     return (
         // @ts-ignore
-        <DndContext
-            sensors={sensors}
-            collisionDetection={closestCenter}
-            onDragStart={handleDragStart}
-            onDragEnd={handleDragEnd}
-        >
-            <div className="container">
-                {showSettings ? (
-                    // Render what you want to show when showSettings is true
-                    <Settings settings={settings} onSetSettings={setSettings} />
-                ) : (
+        <div className="container">
+            {showSettings ? (
+                // Render what you want to show when showSettings is true
+                <Settings settings={settings} onSetSettings={setSettings} />
+            ) : (
                     <>
                         <ToastContainer
                             position="top-right"
@@ -370,51 +388,44 @@ export default function App() {
                         <div className="gridContainer">
                             {!isValidURL ? (
                                 <div className="invalidURLMessage">
-                                    <h3>Invalid URL</h3>
-                                    <p>
-                                        This extension only works on Salesforce domains. Please navigate to a valid
-                                        Salesforce domain.
+                                    <h3>{t("invalidURLHeader")}</h3>
+                                    <p>{t("invalidURLMessage")}
                                     </p>
                                 </div>
                             ) : (
-                                <>
-                                    {loading ? (
-                                        LOADING_MESSAGE
-                                    ) : (
-                                        <>
-                                            <SortableContext items={entries}>
-                                                {entries?.map((entry) => (
-                                                    <Entry
-                                                        settings={settings}
-                                                        key={entry.Id}
-                                                        entry={entry}
-                                                        onDelete={deleteExistingEntry}
-                                                        onEdit={editEntry}
-                                                    />
-                                                ))}
-                                                <DragOverlay>
-                                                    <div
-                                                        style={{
-                                                            position: "fixed",
-                                                            top: 0,
-                                                            left: 0,
-                                                            width: "100%",
-                                                            height: "100%",
-                                                            background: "rgba(0, 0, 0, 0.5)", // Semi-transparent black background
-                                                            zIndex: 1000, // Ensure it's above other elements
-                                                        }}
-                                                    ></div>
-                                                </DragOverlay>
-                                            </SortableContext>
-                                        </>
-                                    )}
-                                </>
-                            )}
+                                    <>
+                                        {loading ? (
+                                            LOADING_MESSAGE
+                                        ) : (
+                                                <>
+                                                    {entries?.map((entry) => (
+                                                        <React.Fragment key={entry.Id}>
+                                                            {/* 🔥 Show drop indicator BEFORE an entry when it's a target */}
+                                                            {dropTarget === entry.Id && <div className="drop-indicator"></div>}
+                                                            <Entry
+                                                                settings={settings}
+                                                                key={entry.Id}
+                                                                entry={entry}
+                                                                onDelete={deleteExistingEntry}
+                                                                onEdit={editEntry}
+                                                                onDragStart={onDragStart}
+                                                                onDragEnd={onDragEnd}
+                                                                onDrop={onDrop}
+                                                                isDragged={draggedItem === entry.Id}
+                                                                isDropTarget={dropTarget === entry.Id}
+                                                                onDragOver={onDragOver}
+                                                            />
+                                                        </React.Fragment>
+                                                    ))}
+                                                    {dropTarget === null && draggedItem && <div className="drop-indicator"></div>}
+                                                </>
+                                            )}
+                                    </>
+                                )}
                         </div>
                     </>
                 )}
-                <Footer doShowSettings={showSettings} onShowSetings={toggleView} />
-            </div>
-        </DndContext>
+            <Footer doShowSettings={showSettings} onShowSetings={toggleView} />
+        </div>
     );
 }

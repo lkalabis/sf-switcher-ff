@@ -4,30 +4,30 @@ import { User } from "../types/User";
 import { LOGOUT_URL, STORAGE_KEY } from "../utils/constants";
 import { SettingsType } from "../types/SettingsType";
 
-import { useSortable } from "@dnd-kit/sortable";
-
 function Entry({
     settings,
     entry,
     onDelete,
     onEdit,
+    onDragStart,
+    onDragEnd,
+    onDrop,
+    isDragged,
+    isDropTarget,
+    onDragOver,
 }: {
-    settings: SettingsType;
-    entry: User;
-    onDelete: (entry: User, withConfirmation: boolean) => void;
-    onEdit: (entry: User) => void;
-}) {
+        settings: SettingsType;
+        entry: User;
+        onDelete: (entry: User, withConfirmation: boolean) => void;
+        onEdit: (entry: User) => void;
+        onDragStart: (event: React.DragEvent<HTMLDivElement>, entryId: string) => void;
+        onDragEnd: () => void;
+        onDrop: (event: React.DragEvent<HTMLDivElement>, entryId: string) => void;
+        isDragged: boolean;
+        isDropTarget: boolean;
+        onDragOver: (event: React.DragEvent<HTMLDivElement>, entryId: string) => void;
+    }) {
     const [showTooltip, setShowTooltip] = useState(false);
-    const { attributes, listeners, setNodeRef, transform } = useSortable({
-        id: entry.Id,
-    });
-
-    const style = transform
-        ? {
-              transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
-              cursor: "grab", // Change cursor to hand
-          }
-        : { cursor: "pointer" }; // Change cursor to hand if there's no transformation, adjust as needed
 
     const handleDelete = () => {
         onDelete(entry, true);
@@ -48,52 +48,59 @@ function Entry({
         if (settings?.UseReLoginFeature === false || settings?.UseReLoginFeature === undefined) {
             browser.tabs.create(properties);
         } else {
-            let activeTab; 
-            browser.tabs
-                .query({ active: true, currentWindow: true })
+            let activeTab: browser.tabs.Tab | undefined;
+            browser.tabs.query({ active: true, currentWindow: true })
                 .then((tabs) => {
-                    // Query active tab
                     activeTab = tabs[0];
 
-                    // Send a message to the content script
-                    console.log("Sending message to content script");
                     return browser.tabs.sendMessage(activeTab.id, { message: "Is User Logged In?" });
                 })
                 .then((response) => {
-                    const isUserLoggedIn = response.isLoggedIn;
-                    console.log("Is user logged in?", isUserLoggedIn);
-                    if (isUserLoggedIn) {
-                        // logout current user
-                        const logoutUrl = `${modifiedUrl}/${LOGOUT_URL}`;
-                        console.log("Logging out user", logoutUrl);
-                        return browser.tabs.sendMessage(activeTab.id, { message: "logoutUser", logoutUrl });
-                    } else {
-                        console.log("User is not logged in");
+                    const isUserLoggedIn = response?.isLoggedIn;
+
+                    if (!isUserLoggedIn) {
                         return browser.tabs.create(properties);
                     }
+
+                    // Logout current user
+                    const logoutUrl = `${modifiedUrl}/${LOGOUT_URL}`;
+                    return browser.tabs.sendMessage(activeTab.id, { message: "logoutUser", logoutUrl });
                 })
                 .then((response) => {
-                    console.log("Response from logout", response);
-                    if (response && response.response === "OK") {
-                        return browser.storage.local.get(STORAGE_KEY);
-                    }
+                    if (response?.response !== "OK") return;
+
+                    return browser.storage.local.get(STORAGE_KEY);
                 })
                 .then((result) => {
-                    const res = result[STORAGE_KEY];
-                    if (!res.loginURLs) {
-                        res.loginURLs = [];
-                    }
-                    // Check if properties.url is already in res.loginURLs array
-                    if (res.loginURLs.indexOf(properties.url) === -1) {
+                    if (!result) return;
+
+                    const res = result[STORAGE_KEY] || {};
+                    res.loginURLs = res.loginURLs || [];
+
+                    if (!res.loginURLs.includes(properties.url)) {
                         res.loginURLs.push(properties.url);
                     }
+
                     return browser.storage.local.set({ [STORAGE_KEY]: res });
                 })
                 .catch((error) => {
-                    console.error(error);
+                    console.error("Error in login flow:", error);
                 });
         }
+
     };
+
+
+    const openUserRecord = async (event: React.MouseEvent) => {
+        event.stopPropagation(); // Prevents the drag event from interfering
+        const currentURL = await getCurrentTabUrl();
+        const modifiedUrl = getModifiedUrl(currentURL);
+
+        const userRecordUrl = `${modifiedUrl}/lightning/r/User/${entry.Id}/view`;
+
+        browser.tabs.create({ url: userRecordUrl });
+    };
+
 
     const ToolTippContainer = ({ entry }: { entry: User }) => (
         <div className="info-container">
@@ -122,45 +129,63 @@ function Entry({
     );
 
     return (
-        <div className="grid">
-            <div className="labelUsernameContainer" ref={setNodeRef} style={style} {...listeners} {...attributes}>
-                <div className="labelEntry">
-                    {entry.Label}
-                    {settings?.ShowProfileNameInLabel === true ? (
-                        <span className="profileName">({entry.Profile?.Name})</span>
-                    ) : (
-                        ""
-                    )}
-                </div>
+        <>
+            {isDropTarget && <div className="drop-indicator"></div>} {/* Drop indicator */}
+            <div className={`grid entry ${isDragged ? "dragging" : ""} ${isDropTarget ? "drop-target" : ""}`}
+                draggable="true"
+                // @ts-ignore
+                onDragStart={(event) => onDragStart(event, entry.Id)}
+                // @ts-ignore
+                onDrop={(event) => onDrop(event, entry.Id)}
+                // @ts-ignore
+                onDragOver={(event) => onDragOver(event, entry.Id)} // ✅ Ensure drag-over is tracked
+            >
+                <div className="labelUsernameContainer">
+                    <div className="labelEntry">
+                        {entry.Label}
+                        {settings?.ShowProfileNameInLabel === true ? (
+                            <span className="profileName">({entry.Profile?.Name})</span>
+                        ) : (
+                                ""
+                            )}
+                    </div>
 
-                <div className="usernameEntry">
-                    <div>{entry.Username}</div>
-                    {settings?.ShowTooltip === true && (
-                        <div className="tooltip">
-                            <i
-                                onMouseEnter={() => setShowTooltip(true)}
-                                onMouseLeave={() => setShowTooltip(false)}
-                                className="fa fa-info-circle information"
-                                aria-hidden="true"
-                            ></i>
+                    <div className="usernameEntry">
+                        <div>{entry.Username}</div>
+                        <div className="usernameEntryIcons">
+                            {settings?.ShowUserLink === true && (
+                                <div className="entry__userLink__icon" onClick={(e) => openUserRecord(e)} title="Open User Record"> 
+                                </div>
+                            )}
+                            {settings?.ShowTooltip === true && (
+
+                                <div className="tooltip">
+                                    <i
+                                        onMouseEnter={() => setShowTooltip(true)}
+                                        onMouseLeave={() => setShowTooltip(false)}
+                                        className="fa fa-info-circle information"
+                                        aria-hidden="true"
+                                    ></i>
+                                </div>
+                            )}
                         </div>
-                    )}
+                    </div>
+                </div>
+
+                {settings?.ShowTooltip === true && showTooltip && <ToolTippContainer entry={entry} />}
+                <div className="buttons">
+                    <button title="Open" className="grid-btn" onClick={openInNewTab}>
+                        <i className="fa fa-home fa-sm"></i>
+                    </button>
+                    <button title="Edit" className="grid-btn" onClick={handleEdit}>
+                        <i className="fa fa-pencil"></i>
+                    </button>
+                    <button title="Delete" className="grid-btn" onClick={handleDelete}>
+                        <i className="fa fa-trash fa-2xs"></i>
+                    </button>
                 </div>
             </div>
-
-            {settings?.ShowTooltip === true && showTooltip && <ToolTippContainer entry={entry} />}
-            <div className="buttons">
-                <button title="Open" className="grid-btn" onClick={openInNewTab}>
-                    <i className="fa fa-home fa-sm"></i>
-                </button>
-                <button title="Edit" className="grid-btn" onClick={handleEdit}>
-                    <i className="fa fa-pencil"></i>
-                </button>
-                <button title="Delete" className="grid-btn" onClick={handleDelete}>
-                    <i className="fa fa-trash fa-2xs"></i>
-                </button>
-            </div>
-        </div>
+        </>
     );
 }
 

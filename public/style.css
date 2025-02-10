@@ -1,3 +1,90 @@
+:root {
+    --color-white: #fff;
+    --color-black: #000;
+    --color-blue: #2f6690;
+    --color-red: #ff0000;
+    --color-green: #00ff00;
+    --color-yellow: #ffff00;
+    --color-orange: #ffa500;
+    --color-blue-main: #2F6690;
+    --background-color-light: #DFDFDF;
+    --footer-color-light: #D7D5DC;
+    --spacing-small: 5px;
+    --spacing-medium: 10px;
+    --spacing-large: 20px;
+    --text-color: #333;
+    --settings__header-color-dark: #D7D5DC;
+    --settings__header-color: #fff;
+    --settings__tite-color: black;
+    --footer__settings__icon--home: url('images/home-black.png');
+    --footer__settings__icon--settings: url('images/settings-black.png');
+    --icon-color: black;
+    --background-color: var(--background-color-light);
+    --background-color-header-button: var(--color-white);
+    --background-color-header-addButton: white;
+    --background-color-header-ediotButton: white;
+    --header-button-color: white;
+    --entry__userLink__icon: url('images/user-link-black.png');
+
+}
+
+
+html {
+    -webkit-text-size-adjust: 100%;
+}
+
+.root {
+    width: 100%;
+}
+
+.theme-light {
+    --background-color: var(--background-color-light);
+    --background-color-header-button: var(--color-white);
+    --text-color: var(--color-2);
+    --button-color: var(--color-11);
+    --hover-color: var(--color-20);
+    --border-color: var(--color-22);
+    --highlight-color: var(--color-16);
+    --text-color: var(--color-black);
+    --footer-color: var(--footer-color-light);
+    --footer-version-color: var(--color-black);
+    --footer__settings__icon--home: url('images/home-black.png');
+    --footer__settings__icon--settings: url('images/settings-black.png');
+    --icon-color: black;
+    --grid-button__hover: var(--footer-color-light);
+    --background-color-header-addButton: white;
+    --background-color-header-editButton: white;
+    --header-button-color: white;
+    --entry__userLink__icon: url('images/user-link-black.png');
+}
+
+/* Dark Theme */
+.theme-dark {
+    --background-color: #202020;
+    --background-color-header-button: var(--color-black);
+    --text-color: var(--color-2)fff;
+    --button-color: var(--color-11);
+    --hover-color: var(--color-20);
+    --border-color: var(--color-22);
+    --highlight-color: var(--color-16);
+    --text-color: var(--color-white);
+    --settings__header-color: black;
+    --settings__tite-color: white;
+    --footer-color: #282A23;
+    --footer-version-color: var(--color-white);
+    --footer__links__a-color: var(--color-white);
+    --footer__settings__icon--home: url('images/home-white.png');
+    --footer__settings__icon--settings: url('images/settings-white.png');
+    --icon-color: white;
+    --grid-button__hover: #282A23;
+    --background-color-header-addButton: black;
+    --background-color-header-editButton: black;
+    --header-button-color: black;
+    --entry__userLink__icon: url('images/user-link-black.png');
+
+}
+}
+
 *,
 *::before,
 *::after {
@@ -9,41 +96,100 @@
     padding: 0;
 }
 
-html {
-    -webkit-text-size-adjust: 100%;
-}
 
 body {
     display: flex;
     width: 645px;
     text-rendering: optimizeSpeed;
-    background-color: #2f6690;
-}
-
-.root {
-    width: 100%;
+    background-color: var(--background-color);
+    font-size: smaller;
 }
 
 .header {
     background-color: #867f8d; /* Add background color as needed */
 }
 
-.logo {
+.settings__logo {
     width: 24px;
     height: 24px;
 }
 
-footer {
+.footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-left: 10px; /* Add padding for spacing */
-    margin-top: auto;
-    padding-right: 10px; /* Add padding for spacing */
-    background-color: #d9dcd6;
-    padding-bottom: 0px;
-    padding-top: 2px;
-    width: 645px;
+    padding: 2px 10px;
+    background-color: var(--footer-color);
+    width: 625px;
+}
+
+.footer__settings {
+    display: flex;
+    align-items: center;
+}
+
+.footer__settings-button {
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+}
+
+.footer__settings-icon {
+    width: 15px;
+    height: 15px;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.entry__userLink__icon {
+    background-image: var(--entry__userLink__icon);
+    background-size: contain; /* Ensure the image fits */
+    background-position: center;
+    background-repeat: no-repeat;
+    width: 13px;
+    height: 13px;
+}
+
+.footer__settings-icon--home{
+    background-image: var(--footer__settings__icon--home);
+}
+.footer__settings-icon--settings {
+    background-image: var(--footer__settings__icon--settings);
+}
+
+.footer__version {
+    margin-left: 10px;
+    color: var(--footer-version-color);
+    font-size: 12px;
+}
+
+.footer__links {
+    display: flex;
+    gap: 10px;
+    align-items: baseline;
+}
+
+.footer__link {
+    text-decoration: none;
+    color: #333;
+    transition: color 0.3s;
+}
+
+.footer__link:hover {
+    color: var(--color-blue);
+}
+
+.footer__link--about {
+    font-weight: bold;
+}
+
+.footer__link--email i {
+    font-size: 16px;
+}
+
+.footer__link--changelog {
+    font-style: italic;
 }
 
 .info {
@@ -52,17 +198,17 @@ footer {
     gap: 10px;
 }
 
-.social-icons {
+.footer__links {
     display: flex;
     gap: 10px; /* Adjust spacing between icons */
 }
 
-.social-icons a {
+.footer__links a {
     text-decoration: none;
-    color: #333; /* Adjust color as needed */
+    color: var(--footer__links__a-color); /* Adjust color as needed */
 }
 
-.social-icons img {
+.footer__links img {
     width: 24px; /* Adjust icon size as needed */
     height: 24px;
     border-radius: 50%; /* Optional: Add border-radius for rounded icons */
@@ -72,23 +218,24 @@ footer {
     display: flex;
     flex-direction: column;
     min-height: 220px;
+    background-color: var(--background-color);
 }
 
 .addButtonContainer {
-    /* margin-top: 4px; */
+    background-color: var(--background-color-header-addButton);
     width: 100%;
-    background-color: #3a7ca5; /* Add background color as needed */
 }
 
 .editButtonContainer {
     display: flex;
-    background-color: #3a7ca5; /* Add background color as needed */
+    background-color: var(--background-color-header-editButton); /* Add background color as needed */
 }
 
 .gridContainer {
     flex-direction: column;
-    margin-top: 4px;
+    background-color: var(--background-color);
     display: flex;
+    min-height: 220px;
 }
 
 .grid {
@@ -124,6 +271,15 @@ footer {
 
 .line {
     margin-bottom: 5px; /* Adjust spacing between lines as needed */
+}
+
+.fa {
+    display: inline-block;
+    font: normal normal normal 14px / 1 FontAwesome;
+    font-size: inherit;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    color: var(--icon-color); /* Adjust icon color as needed */
 }
 
 .name {
@@ -182,7 +338,7 @@ footer {
     border-radius: 4px;
     box-sizing: border-box;
     color: black;
-    background-color: white;
+    background-color: var(--color-white);
 }
 .labelEntry {
     width: 220px;
@@ -200,12 +356,17 @@ footer {
     white-space: nowrap;
 }
 
+.usernameEntryIcons {
+    display: flex;
+    gap: 5px;
+}
+
 .info-container {
     position: absolute;
     display: inline-block;
     top: 10px;
     left: 30px;
-    background-color: white;
+    background-color: var(--color-white);
     padding: 1%;
     border-radius: 4px;
     border-style: solid;
@@ -218,11 +379,11 @@ footer {
 .labelEntry,
 .usernameEntry,
 .shortcutEntry {
-    padding: 2px;
+    padding: 4px;
     border: 1px solid #ccc;
     border-radius: 4px;
     box-sizing: border-box;
-    background-color: white;
+    background-color: var(--color-white);
 }
 
 .settingsIcon img {
@@ -249,36 +410,46 @@ input[type="number"]::-webkit-outer-spin-button {
 input[type="number"] {
     -moz-appearance: textfield; /* Firefox */
 }
-.settings-text {
+.settings__title {
     margin-left: 12px;
     font-size: large;
+    color: var(--settings__tite-color);
 }
 
-.mainSettingsSection {
+.settings__main {
     display: flex;
-    flex-direction: column;
+    height: 200px;
+    background-color: var(--background-color);
+    color: var(--text-color);
 }
 
 .saveButtonContainer {
     position: fixed;
-    bottom: 25px;
-    left: 300px;
-    display: flex;
-    justify-content: center;
+    bottom: 35px;
+    margin-left: 270px;
 }
 
 .saveButtonContainer button {
     padding: 2px 6px;
     font-size: 15px;
     border: none;
+    width: 100px;
     border-radius: 5px;
     cursor: pointer;
     transition: background 0.3s ease;
 }
 
+.saveButtonContainer button:hover {
+    background-color: var(--footer-color-light); /* Light blue background on hover */
+}
 .saveButtonContainer button:disabled {
     background: #ccc; /* Gray background when disabled */
     cursor: not-allowed;
+}
+
+.information {
+    text-decoration: none;
+    color: inherit;
 }
 
 .informationIconLink {
@@ -290,28 +461,42 @@ input[type="number"] {
     cursor: pointer;
 }
 
-.showHelpContainer {
-    position: fixed;
-    top: 50px;
-    left: 250px;
-    border-radius: 5px;
-    border-style: solid;
+.settings__theme-select {
+    min-width: 150px;
 }
 
-.lookAndFeelInputs {
+.settings__inputs-group--left,
+.settings__inputs-group--right  {
+    flex: 1; /* Distribute space equally between columns */
     padding: 20px;
-    background: #dfdfdf; /* Light gray background */
     height: 166px;
 }
 
-.lookAndFeelInputs label {
+.settings__inputs-group--left label {
     display: flex;
     align-items: center;
     margin-bottom: 10px;
 }
 
-.lookAndFeelInputs input[type="checkbox"] {
-    margin-right: 10px;
+.settings__inputs-group--left input[type="checkbox"] {
+    margin-right: 0.5rem;
+    transform: scale(1.2);
+}
+
+.settings__inputs-group--right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end; /* Align items to the left */
+}
+
+.settings__inputs-group--right label {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.settings__inputs-group--right span {
+    margin-right: 0.5rem;
 }
 
 .reLoginTimeInput {
@@ -320,45 +505,26 @@ input[type="number"] {
     text-align: right;
 }
 
-.lookAndFeelInputs .reLoginTimeInput {
+.settings__inputs_group__left .reLoginTimeInput {
     margin-right: 10px;
     width: 100px;
     padding-right: 5px;
 }
 
-.version {
+.footer__version {
     margin-left: 10px;
 }
 
-.navbarSettingsSection {
-    margin-left: 150px;
-}
-
-.showLookFeelSectionPartButton {
-    background-color: #ccc;
-    border: none;
-    cursor: pointer;
-    padding: 4px;
-    border-radius: 5px;
-}
-
-.LookAndFeelHeader {
-    display: flex;
-    justify-content: center;
-    padding: 4px;
-    font-size: 16px;
-}
-
-.headerSettingsSection {
+.settings__header {
     align-items: center;
     width: 645px;
-    padding: 5px;
+    height: 40px;
     display: flex;
-    justify-content: space-between;
-    background-color: white;
+    justify-content: center;
+    background-color: var(--settings__header-color);
 }
 
-.headerSettingsSectionContainer {
+.settings__header-container {
     display: flex;
 }
 .invalidURLMessage {
@@ -380,20 +546,18 @@ input[type="number"] {
 }
 
 .grid-btn {
-    background-color: #2f6690;
-    color: white; /* White text */
     padding: 8px 10px; /* Some padding */
+    background: transparent;
     font-size: 16px; /* Set a font size */
     cursor: pointer; /* Mouse pointer on hover */
     border: none;
 }
 
 .grid-btn:hover {
-    background-color: #3a7ca5; /* Add background color as needed */
+    background-color: var(--grid-button__hover); /* Add background color as needed */
 }
 .btn {
-    background-color: #3a7ca5;
-    color: white; /* White text */
+    background-color: var(--header-button-color); /* White text */
     padding: 8px 10px; /* Some padding */
     font-size: 16px; /* Set a font size */
     cursor: pointer; /* Mouse pointer on hover */
@@ -401,12 +565,51 @@ input[type="number"] {
 }
 
 .addEntryButton {
-    /* width: 100%; */
     width: 645px;
-    height: 35px;
+    height: 40px;
+    background-color: var(--background-color-header-button);
 }
 
 /* Darker background on mouse-over */
 .btn:hover {
-    background-color: #16425b; /* Add background color as needed */
+    background-color: var(--grid-button__hover); /* Add background color as needed */
+}
+
+.entry {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.entry:hover {
+    /* background: #f5f5f5; /* Light gray hover effect */ */
+    cursor: grab;
+}
+
+.entry.dragging {
+    opacity: 0.5;
+    transform: scale(1.05);
+    cursor: grabbing;
+}
+
+.entry.drop-target {
+    background: #e6f7ff;
+    border: 2px dashed #007bff;
+}
+
+.drop-indicator {
+    height: 3px;
+    background: #007bff;
+    border-radius: 3px;
+    opacity: 0.85;
+    transition: opacity 0.2s ease-in-out, transform 0.15s ease-in-out;
+}
+
+/* Add smooth spacing when dragging */
+.entry.drop-target {
+    background: #e6f7ff;
+    border: 2px dashed #007bff;
+}
+
+/* Add spacing between drop zones for better visibility */
+.drop-indicator + .entry {
+    margin-top: 8px;
 }

@@ -53,14 +53,37 @@ export const getModifiedUrl = (url: string) => {
 
 /** Create a new UUID */
 export const createUUID = () => {
+    // @ts-ignore
     return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+        // @ts-ignore
         const r = (Math.random() * 16) | 0;
+        // @ts-ignore
         const v = c === "x" ? r : (r & 0x3) | 0x8;
         return v.toString(16);
     });
 };
 
-export const writeNewEntryToStorage = (newEntry: User, currentOrg: OrgInfo) => {
+const createNewUser = (newEntry: User, currentOrg: OrgInfo) => {
+    const userData: User = {
+        id: newEntry.id,
+        Id: newEntry.Id,
+        Username: newEntry.Username,
+        Email: newEntry.Email,
+        OrgId: currentOrg.orgId,
+        Label: newEntry.Label,
+        FirstName: newEntry.FirstName,
+        LastName: newEntry.LastName,
+        Shortcut: null,
+        IsActive: true,
+        UUID: newEntry.UUID,
+        Profile: {
+            Name: newEntry.Profile.Name,
+        },
+    };
+    return userData;
+};
+
+export const writeNewEntryToStorage = (newEntry: User, currentOrg: OrgInfo, indexToAdd?: number) => {
     return new Promise<void>((resolve, reject) => {
         const orgId = currentOrg.orgId;
 
@@ -78,23 +101,7 @@ export const writeNewEntryToStorage = (newEntry: User, currentOrg: OrgInfo) => {
                 const storageData = result[STORAGE_KEY] || {};
                 existingData = new JsonStructure();
                 existingData.orgIds = storageData;
-
-                const userData: User = {
-                    id: newEntry.Id,
-                    Id: newEntry.Id,
-                    Username: newEntry.Username,
-                    Email: newEntry.Email,
-                    OrgId: orgId,
-                    Label: newEntry.Label,
-                    FirstName: newEntry.FirstName,
-                    LastName: newEntry.LastName,
-                    Shortcut: null,
-                    IsActive: true,
-                    UUID: newEntry.UUID,
-                    Profile: {
-                        Name: newEntry.Profile.Name,
-                    },
-                };
+                const userData = createNewUser(newEntry, currentOrg);
 
                 if (!storageData[orgId]) {
                     // 'orgId' not found, create a basic structure
@@ -111,7 +118,7 @@ export const writeNewEntryToStorage = (newEntry: User, currentOrg: OrgInfo) => {
                         },
                     });
                 } else {
-                    existingData.addUser(orgId, userData);
+                    existingData.addUser(orgId, userData, indexToAdd);
                     return browser.storage.local.set({ [STORAGE_KEY]: existingData.orgIds });
                 }
             })
@@ -147,7 +154,6 @@ export const writeAllEntriesToStorage = (entries: User[], currentOrg: OrgInfo) =
                 existingData.orgIds[orgId].users = [];
 
                 entries.forEach((entry) => {
-                    console.log(entry);
                     existingData.addUser(orgId, entry);
                 });
 
